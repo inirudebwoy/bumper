@@ -5,6 +5,7 @@ module Main (main) where
 
 import System.Console.CmdArgs
 import System.Environment
+import Data.List
 
 
 data Bumper = Bumper {current_version :: String, part :: String, file :: String}
@@ -20,20 +21,29 @@ bumper = Bumper {
 
 getOpts :: IO Bumper
 getOpts = cmdArgs $ bumper
-          -- add additional arguments
+-- add additional arguments
 
--- bump :: String -> String -> String -> IO ()
--- bump version part file = do
---   contents <- readFile file
---   putStrLn $ version ++ part ++ file
+replace :: (Eq a) => [a] -> [a] -> [a] -> [a]
+replace _ _ [] = []
+replace old new xs@(y:ys) =
+    case stripPrefix old xs of
+      Nothing -> y : replace old new ys
+      Just ys' -> new ++ replace old new ys'
 
--- bump' :: Bumper -> String
--- bump' (Bumper {current_version = v, part = p, file = f}) = (v ++( p ++ f))
+versionBumper :: [Char] -> [Char] -> [Char]
+versionBumper part current = current
+
+-- split current_version by "."
+-- increase by 1 one of numbers after split
+-- use guards? or case?
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
+  contents <- readFile file
+  let fileLines = lines contents
+      bumpedVer = versionBumper part current_version
+  putStr $ unlines (map (\x -> replace current_version bumpedVer x) fileLines)
   -- do work here
-  putStrLn $ "Hey, " ++ current_version
 
 optionHandler :: Bumper -> IO ()
 optionHandler opts@Bumper{..} = do
