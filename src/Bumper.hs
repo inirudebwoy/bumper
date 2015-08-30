@@ -41,7 +41,12 @@ makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
 versionBumper :: [Char] -> [[Char]] -> [Char]
-versionBumper part current = makeVersion current
+versionBumper part current
+    | part == "major" = makeVersion ([(show (read major + 1))] ++ tail current)
+    | part == "minor" = makeVersion ([head current] ++ [(show (read minor + 1))] ++ [last current])
+    | part == "patch" = makeVersion (init current ++ [(show (read (head patch) + 1))])
+    | otherwise = show current -- error here?
+    where (major:minor:patch) = current
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
