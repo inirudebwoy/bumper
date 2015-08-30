@@ -37,17 +37,21 @@ splitVersion v@(x:xs)
     | otherwise = let (h, t) = break isDot v in h:(splitVersion t)
     where isDot x' = x' == '.'
 
-versionBumper :: [Char] -> [Char] -> [Char]
+versionBumper :: [Char] -> [[Char]] -> [Char]
 versionBumper part current
-    | part == "major" = current
-    | part == "minor" = current
-    | part == "patch" = current
+    | current == [] = ""
+    -- wider pattern match, this can catch all parts
+    | part == "major" = major ++ minor ++ patch
+    | part == "minor" = show (read current + 1) :: [Char]
+    | part == "patch" = major ++ minor ++ patch
+    | otherwise = major ++ minor ++ patch
+    where (major:minor:patch) = current
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
   contents <- readFile file
   let fileLines = lines contents
-      bumpedVer = versionBumper part current_version
+      bumpedVer = versionBumper part (splitVersion current_version)
   putStr $ unlines (map (\x -> replace current_version bumpedVer x) fileLines)
   -- do work here
 
