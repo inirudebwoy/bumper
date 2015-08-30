@@ -38,14 +38,7 @@ splitVersion v@(x:xs)
     where isDot x' = x' == '.'
 
 versionBumper :: [Char] -> [[Char]] -> [Char]
-versionBumper part current
-    | current == [] = ""
-    -- wider pattern match, this can catch all parts
-    | part == "major" = major ++ minor ++ patch
-    | part == "minor" = show (read current + 1) :: [Char]
-    | part == "patch" = major ++ minor ++ patch
-    | otherwise = major ++ minor ++ patch
-    where (major:minor:patch) = current
+versionBumper part current = concat current
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
