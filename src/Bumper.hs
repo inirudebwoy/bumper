@@ -36,16 +36,12 @@ splitVersion v@(x:xs)
     | otherwise = let (h, t) = break isDot v in h:(splitVersion t)
     where isDot x' = x' == '.'
 
-versionBumper :: [Char] -> [[Char]] -> [Char]
-versionBumper part current = concat current
+makeVersion :: [[Char]] -> [Char]
+makeVersion [] = []
+makeVersion chunks = intercalate "." chunks
 
-    -- | current == [] = ""
-    -- -- wider pattern match, this can catch all parts
-    -- | part == "major" = major ++ minor ++ patch
-    -- | part == "minor" = show (read current + 1) :: [Char]
-    -- | part == "patch" = major ++ minor ++ patch
-    -- | otherwise = major ++ minor ++ patch
-    -- where (major:minor:patch) = current
+versionBumper :: [Char] -> [[Char]] -> [Char]
+versionBumper part current = makeVersion current
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
