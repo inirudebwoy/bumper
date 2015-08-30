@@ -47,7 +47,7 @@ cabal-version:       >=1.10
 
 
 executable bumper
-  ghc-options: -Wall
+  ghc-options: -rtsopts -O2
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
@@ -59,10 +59,29 @@ executable bumper
 
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.8 && <4.9,
+                       bumper,
                        cmdargs
 
   -- Directories containing source files.
   hs-source-dirs:      src
 
   -- Base language which the package is written in.
+  default-language:    Haskell2010
+
+test-suite tests
+  ghc-options:         -Wall
+  type:                exitcode-stdio-1.0
+  main-is:             Tests.hs
+  hs-source-dirs:      tests
+  build-depends:       base,
+                       bumper,
+                       hspec >= 2.0 && < 2.1
+  default-language:    Haskell2010
+
+library
+  ghc-options:         -Wall
+  exposed-modules:     Bumper
+  build-depends:       base >= 4.7 && <5,
+                       cmdargs
+  hs-source-dirs:      src
   default-language:    Haskell2010
