@@ -3,6 +3,7 @@
 
 module Bumper where
 
+import Control.Monad (when)
 import System.Console.CmdArgs
 import Data.List
 
@@ -18,7 +19,7 @@ bumper = Bumper {current_version = def &= help "The current version of the softw
 getOpts :: IO Bumper
 getOpts = cmdArgs $ bumper
           &= help ("Version bumping software.")
-          &= summary "bumper v0.0.1, Michał Klich"
+          &= summary "bumper 0.0.1, Michał Klich"
 
 -- add additional arguments
 
@@ -56,8 +57,9 @@ exec Bumper{..} = do
   contents <- readFile file
   let fileLines = lines contents
       bumpedVer = versionBumper part (splitVersion current_version)
-  putStr $ unlines (map (\x -> replace current_version bumpedVer x) fileLines)
-  -- do work here
+      newContent = unlines (map (\x -> replace current_version bumpedVer x) fileLines)
+  when (length newContent > 0) $
+       writeFile file newContent
 
 optionHandler :: Bumper -> IO ()
 optionHandler opts@Bumper{..} = do
