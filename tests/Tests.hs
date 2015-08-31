@@ -18,7 +18,7 @@ main = hspec $ do
     it "bump with no part" $ do
       versionBumper "" ["1", "0", "0"] `shouldBe` "1.0.0"
     it "bump with no version" $ do
-      versionBumper "minor" [] `shouldBe` "1.0.0"
+      versionBumper "minor" [] `shouldBe` ""
 
   describe "Verify versionBumper with less than three part version" $ do
     it "bump with two part version" $ do
