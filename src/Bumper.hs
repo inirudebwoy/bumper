@@ -3,6 +3,7 @@
 
 module Bumper where
 
+import Control.Monad (when)
 import System.Console.CmdArgs
 import Data.List
 
@@ -18,7 +19,7 @@ bumper = Bumper {current_version = def &= help "The current version of the softw
 getOpts :: IO Bumper
 getOpts = cmdArgs $ bumper
           &= help ("Version bumping software.")
-          &= summary "bumper v0.0.1, Michał Klich"
+          &= summary "bumper 0.0.1, Michał Klich"
 
 -- add additional arguments
 
@@ -41,15 +42,24 @@ makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
 versionBumper :: [Char] -> [[Char]] -> [Char]
-versionBumper part current = makeVersion current
+versionBumper part current
+    | part == "major" && length current >= 1 =
+        makeVersion ([bumpElement (current !! 0)] ++ tail current)
+    | part == "minor" && length current >= 2 =
+        makeVersion ([head current] ++ [bumpElement (current !! 1)] ++ [last current])
+    | part == "patch" && length current >= 3 =
+        makeVersion (init current ++ [bumpElement (current !! 2)])
+    | otherwise = makeVersion current -- error here?
+    where bumpElement el = show ((read el :: Int) + 1) :: String
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
   contents <- readFile file
   let fileLines = lines contents
       bumpedVer = versionBumper part (splitVersion current_version)
-  putStr $ unlines (map (\x -> replace current_version bumpedVer x) fileLines)
-  -- do work here
+      newContent = unlines (map (\x -> replace current_version bumpedVer x) fileLines)
+  when (length newContent > 0) $
+       writeFile file newContent
 
 optionHandler :: Bumper -> IO ()
 optionHandler opts@Bumper{..} = do
