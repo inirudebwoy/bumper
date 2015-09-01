@@ -41,16 +41,19 @@ makeVersion :: [[Char]] -> [Char]
 makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
+partIndex :: [Char] -> Int
+partIndex part
+        | part == "major" = 0
+        | part == "minor" = 1
+        | part == "patch" = 2
+        | otherwise = -1 -- OMG, nope, this might throw error?
+
 versionBumper :: [Char] -> [[Char]] -> [Char]
-versionBumper part current
-    | part == "major" && length current >= 1 =
-        makeVersion ([bumpElement (current !! 0)] ++ tail current)
-    | part == "minor" && length current >= 2 =
-        makeVersion ([head current] ++ [bumpElement (current !! 1)] ++ [last current])
-    | part == "patch" && length current >= 3 =
-        makeVersion (init current ++ [bumpElement (current !! 2)])
-    | otherwise = makeVersion current -- error here?
-    where bumpElement el = show ((read el :: Int) + 1) :: String
+versionBumper part current = makeVersion (map (\(x, y) -> if y == partIndex part
+                                                          then bumpElement x
+                                                          else x) (zip current [0..]))
+    where
+      bumpElement el = show ((read el :: Int) + 1) :: String
 
 exec :: Bumper -> IO ()
 exec Bumper{..} = do
