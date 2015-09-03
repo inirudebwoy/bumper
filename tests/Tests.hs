@@ -6,6 +6,8 @@ import Test.Hspec
 
 main :: IO ()
 main = hspec $ do
+
+  -- versionBumper
   describe "Verify versionBumper happy path" $ do
     it "bump major" $ do
       versionBumper "major" ["1", "0", "0"] `shouldBe` "2.0.0"
@@ -34,6 +36,29 @@ main = hspec $ do
     it "bump with invalid part name" $ do
       versionBumper "foo" ["1", "0", "0"] `shouldBe` "1.0.0"
 
+  -- addSuffix
+  describe "Verify addSuffix replaces suffix in version" $ do
+    it "swap rc-1 to rc-2" $ do
+      addSuffix "rc-2" "1.0.0-rc1" `shouldBe` "1.0.0-rc2"
+
+  describe "Verify addSuffix adds suffix to version" $ do
+    it "add rc-1 to version" $ do
+      addSuffix "rc-1" "1.0.0" `shouldBe` "1.0.0-rc1"
+
+  describe "Verify addSuffix replaces suffix in version" $ do
+    it "swap rc-1 to build123dev" $ do
+      versionBumper "build123dev" "1.0.0-rc1" `shouldBe` "1.0.0-build123dev"
+
+  -- addBuild
+  describe "Verify addBuild adds build number" $ do
+    it "add build to version" $ do
+      versionBumper "11" "1.0.0" `shouldBe` "1.0.0+11"
+
+  describe "Verify addBuild adds build number" $ do
+    it "add build to version with suffix" $ do
+      versionBumper "11" "1.0.0-alpha" `shouldBe` "1.0.0-alpha+11"
+
+  -- splitVersion
   describe "Verify splitVersion happy path" $ do
     it "split version with three parts" $ do
       splitVersion "1.0.0" `shouldBe` ["1", "0", "0"]
@@ -44,7 +69,7 @@ main = hspec $ do
     it "split version with empty string" $ do
       splitVersion "" `shouldBe` []
 
-
+  -- replace
   describe "Verify replace" $ do
     it "replaces old version with new" $ do
       replace "1.0.0" "1.0.1" "version=1.0.0" `shouldBe` "version=1.0.1"
