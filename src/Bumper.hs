@@ -41,6 +41,12 @@ makeVersion :: [[Char]] -> [Char]
 makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
+addSuffix :: [Char] -> [Char] -> [Char]
+addSuffix version suffix = version ++ "-" ++ suffix
+
+addBuild :: [Char] -> [Char] -> [Char]
+addBuild version build = version ++ "+" ++ build
+
 partIndex :: [Char] -> Int
 partIndex part
         | part == "major" = 0

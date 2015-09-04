@@ -39,24 +39,36 @@ main = hspec $ do
   -- addSuffix
   describe "Verify addSuffix replaces suffix in version" $ do
     it "swap rc-1 to rc-2" $ do
-      addSuffix "rc-2" "1.0.0-rc1" `shouldBe` "1.0.0-rc2"
+      addSuffix "1.0.0-rc1" "rc-2" `shouldBe` "1.0.0-rc2"
 
   describe "Verify addSuffix adds suffix to version" $ do
     it "add rc-1 to version" $ do
-      addSuffix "rc-1" "1.0.0" `shouldBe` "1.0.0-rc1"
+      addSuffix "1.0.0" "rc-1" `shouldBe` "1.0.0-rc1"
 
   describe "Verify addSuffix replaces suffix in version" $ do
     it "swap rc-1 to build123dev" $ do
-      versionBumper "build123dev" "1.0.0-rc1" `shouldBe` "1.0.0-build123dev"
+      addSuffix "1.0.0-rc1" "build123dev" `shouldBe` "1.0.0-build123dev"
+
+  describe "Verify addSuffix replaces suffix in version with build" $ do
+    it "swap rc-1 with rc-2 but keep build" $ do
+      addSuffix "1.0.0-rc1+42" "rc2" `shouldBe` "1.0.0-rc2+42"
 
   -- addBuild
   describe "Verify addBuild adds build number" $ do
     it "add build to version" $ do
-      versionBumper "11" "1.0.0" `shouldBe` "1.0.0+11"
+      addBuild "1.0.0" "11"`shouldBe` "1.0.0+11"
 
   describe "Verify addBuild adds build number" $ do
     it "add build to version with suffix" $ do
-      versionBumper "11" "1.0.0-alpha" `shouldBe` "1.0.0-alpha+11"
+      addBuild "1.0.0-alpha" "11" `shouldBe` "1.0.0-alpha+11"
+
+  describe "Verify addBuild replaces build number" $ do
+    it "add build to version" $ do
+      addBuild "1.0.0+10" "11"`shouldBe` "1.0.0+11"
+
+  describe "Verify addBuild replaces build number" $ do
+    it "add build to version with suffix" $ do
+      addBuild "1.0.0-alpha+10" "11" `shouldBe` "1.0.0-alpha+11"
 
   -- splitVersion
   describe "Verify splitVersion happy path" $ do
