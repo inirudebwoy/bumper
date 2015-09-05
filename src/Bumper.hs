@@ -45,7 +45,7 @@ addSuffix :: [Char] -> [Char] -> [Char]
 addSuffix version suffix = version ++ "-" ++ suffix
 
 addBuild :: [Char] -> [Char] -> [Char]
-addBuild version build = version ++ "+" ++ build
+addBuild version build = takeWhile ('+' <) version ++ "+" ++ build
 
 partIndex :: [Char] -> Int
 partIndex part
