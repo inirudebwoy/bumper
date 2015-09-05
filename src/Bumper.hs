@@ -41,10 +41,16 @@ makeVersion :: [[Char]] -> [Char]
 makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
+takeBuild :: [Char] -> [Char]
+takeBuild version = case dropWhile ('+' <) version of "" -> ""
+                                                      x -> tail x
+
 addSuffix :: [Char] -> [Char] -> [Char]
-addSuffix version suffix = version ++ "-" ++ suffix
+addSuffix version suffix =
+    addBuild (takeWhile ('-' <) version ++ "-" ++ suffix) (takeBuild version)
 
 addBuild :: [Char] -> [Char] -> [Char]
+addBuild version "" = takeWhile ('+' <) version
 addBuild version build = takeWhile ('+' <) version ++ "+" ++ build
 
 partIndex :: [Char] -> Int

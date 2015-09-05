@@ -38,20 +38,37 @@ main = hspec $ do
 
   -- addSuffix
   describe "Verify addSuffix replaces suffix in version" $ do
-    it "swap rc-1 to rc-2" $ do
-      addSuffix "1.0.0-rc1" "rc-2" `shouldBe` "1.0.0-rc2"
+    it "swap rc1 to rc2" $ do
+      addSuffix "1.0.0-rc1" "rc2" `shouldBe` "1.0.0-rc2"
 
   describe "Verify addSuffix adds suffix to version" $ do
-    it "add rc-1 to version" $ do
-      addSuffix "1.0.0" "rc-1" `shouldBe` "1.0.0-rc1"
-
-  describe "Verify addSuffix replaces suffix in version" $ do
-    it "swap rc-1 to build123dev" $ do
-      addSuffix "1.0.0-rc1" "build123dev" `shouldBe` "1.0.0-build123dev"
+    it "add rc1 to version" $ do
+      addSuffix "1.0.0" "rc1" `shouldBe` "1.0.0-rc1"
 
   describe "Verify addSuffix replaces suffix in version with build" $ do
-    it "swap rc-1 with rc-2 but keep build" $ do
+    it "swap rc1 with rc2 but keep build" $ do
       addSuffix "1.0.0-rc1+42" "rc2" `shouldBe` "1.0.0-rc2+42"
+
+  -- takeBuild
+  describe "Verify takeBuild takes build" $ do
+    it "from nothing to nothing" $ do
+       takeBuild "" `shouldBe` ""
+
+  describe "Verify takeBuild takes build" $ do
+    it "from version with no build" $ do
+       takeBuild "1.0.0" `shouldBe` ""
+
+  describe "Verify takeBuild takes build" $ do
+    it "from version with no build but with suffix" $ do
+       takeBuild "1.0.0-rc1" `shouldBe` ""
+
+  describe "Verify takeBuild takes build" $ do
+    it "from version with build but no suffix" $ do
+       takeBuild "1.0.0+b01" `shouldBe` "b01"
+
+  describe "Verify takeBuild takes build" $ do
+    it "from version with build and suffix" $ do
+       takeBuild "1.0.0-rc1+b02" `shouldBe` "b02"
 
   -- addBuild
   describe "Verify addBuild adds build number" $ do
