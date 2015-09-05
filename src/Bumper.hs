@@ -25,10 +25,9 @@ getOpts = cmdArgs $ bumper
 
 replace :: (Eq a) => [a] -> [a] -> [a] -> [a]
 replace _ _ [] = []
-replace old new xs@(y:ys) =
-    case stripPrefix old xs of
-      Nothing -> y : replace old new ys
-      Just ys' -> new ++ replace old new ys'
+replace old new xs@(y:ys) = case stripPrefix old xs of
+                              Nothing -> y : replace old new ys
+                              Just ys' -> new ++ replace old new ys'
 
 splitVersion :: [Char] -> [[Char]]
 splitVersion [] = []
@@ -42,8 +41,9 @@ makeVersion [] = []
 makeVersion chunks = intercalate "." chunks
 
 takeBuild :: [Char] -> [Char]
-takeBuild version = case dropWhile ('+' <) version of "" -> ""
-                                                      x -> tail x
+takeBuild version = case dropWhile ('+' <) version of
+                      "" -> ""
+                      x -> tail x
 
 addSuffix :: [Char] -> [Char] -> [Char]
 addSuffix version suffix =
