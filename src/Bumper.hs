@@ -13,7 +13,7 @@ data Bumper = Bumper
      suffix :: String,
      build :: String,
      part :: String,
-     file :: String
+     file :: [FilePath]
     } deriving (Show, Data, Typeable)
 
 bumper :: Bumper
