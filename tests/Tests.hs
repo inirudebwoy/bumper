@@ -49,6 +49,10 @@ main = hspec $ do
     it "swap rc1 with rc2 but keep build" $ do
       addSuffix "1.0.0-rc1+42" "rc2" `shouldBe` "1.0.0-rc2+42"
 
+  describe "Verify addSuffix adds suffix" $ do
+    it "add rc1 to version with build" $ do
+      addSuffix "1.0.0+847362" "beta" `shouldBe` "1.0.0-beta+847362"
+
   -- takeBuild
   describe "Verify takeBuild takes build" $ do
     it "from nothing to nothing" $ do
