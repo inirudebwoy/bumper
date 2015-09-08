@@ -13,7 +13,7 @@ data Bumper = Bumper
      suffix :: String,
      build :: String,
      part :: String,
-     file :: [FilePath]
+     fileList :: [FilePath]
     } deriving (Show, Data, Typeable)
 
 bumper :: Bumper
@@ -22,7 +22,7 @@ bumper = Bumper
           suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
           build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
           part = def &= argPos 0 &= typ "PART",
-          file = def &= argPos 1 &= typFile
+          fileList = def &= argPos 1 &= typFile
          }
 
 getOpts :: IO Bumper
@@ -87,5 +87,8 @@ exec Bumper{..} = do
 
 optionHandler :: Bumper -> IO ()
 optionHandler opts@Bumper{..} = do
-  -- cleanup arguments
-  exec opts
+  -- file liste feature needs to be added here, exec should not be responsible for
+  -- anything else beside working on file
+  map (\file -> do
+         exec opts
+         ) fileList
