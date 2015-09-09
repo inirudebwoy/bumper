@@ -13,7 +13,7 @@ data Bumper = Bumper
      suffix :: String,
      build :: String,
      part :: String,
-     fileList :: [FilePath]
+     files :: [FilePath]
     } deriving (Show, Data, Typeable)
 
 bumper :: Bumper
@@ -22,7 +22,7 @@ bumper = Bumper
           suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
           build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
           part = def &= argPos 0 &= typ "PART",
-          fileList = def &= argPos 1 &= typFile
+          files = def &= args &= typ "FILES/DIRS"
          }
 
 getOpts :: IO Bumper
@@ -76,8 +76,8 @@ versionBumper part current = makeVersion (map (\(x, y) -> if y == partIndex part
     where
       bumpElement el = show ((read el :: Int) + 1) :: String
 
-exec :: Bumper -> IO ()
-exec Bumper{..} = do
+exec :: FilePath -> [Char] -> [Char] -> IO ()
+exec part current_version file = do
   contents <- readFile file
   let fileLines = lines contents
       bumpedVer = versionBumper part (splitVersion current_version)
@@ -89,6 +89,13 @@ optionHandler :: Bumper -> IO ()
 optionHandler opts@Bumper{..} = do
   -- file liste feature needs to be added here, exec should not be responsible for
   -- anything else beside working on file
-  map (\file -> do
-         exec opts
-         ) fileList
+  sequence' (map (\file -> do
+                    exec part current_version file
+                 ) files)
+
+-- Run all IO actions from list in sequence
+sequence' :: [IO ()] -> IO()
+sequence' [] = return ()
+sequence' (x:xs) = do
+  x
+  sequence' xs
