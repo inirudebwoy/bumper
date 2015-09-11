@@ -8,7 +8,7 @@ In order to bump minor version 2.1.4 in your Setup.hs file call.
 ```bash
 bumper -c 2.1.4 minor Setup.hs
 ```
-More can be found in [examples][Examples] section
+More can be found in [examples][examples] section
 
 Other features are:
 
@@ -33,7 +33,7 @@ Other features are:
 bumper -c 1.0.1 major file1.txt file2.txt file3.txt
 ```
 
-### Examples
+### Examples {#examples}
 
 * bumping major version of 1.0.1:
 
