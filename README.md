@@ -8,7 +8,7 @@ In order to bump minor version 2.1.4 in your Setup.hs file call.
 ```bash
 bumper -c 2.1.4 minor Setup.hs
 ```
-More can be found in [Examples] section
+More can be found in [examples][Examples] section
 
 Other features are:
 
