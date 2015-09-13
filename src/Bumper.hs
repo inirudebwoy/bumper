@@ -1,10 +1,34 @@
 #! /usr/bin/env runhaskell
+{-# LANGUAGE DeriveDataTypeable #-}
 
 module Bumper where
 
 import Data.List
+import System.Console.CmdArgs
 
--- add additional arguments
+data Part = Major | Minor | Patch
+          deriving (Data, Typeable, Show, Eq)
+
+data Bumper = Bumper
+    {current_version :: String,
+     suffix :: String,
+     build :: String,
+     part :: Part,
+     files :: [FilePath]
+    } deriving (Show, Data, Typeable)
+
+bumper :: Bumper
+bumper = Bumper
+         {current_version = def &= help "The current version of the software package before bumping." &= typ "VERSION",
+          suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
+          build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
+          part = enum
+                 [Major &= help "Major",
+                  Minor &= help "Minor",
+                  Patch &= help "Patch"
+                 ],
+          files = def &= args &= typ "FILES/DIRS"
+         }
 
 replace :: (Eq a) => [a] -> [a] -> [a] -> [a]
 replace _ _ [] = []
@@ -29,21 +53,19 @@ takeBuild version = case dropWhile ('+' <) version of
                       x -> tail x
 
 addSuffix :: [Char] -> [Char] -> [Char]
-addSuffix version suffix =
-    addBuild (takeWhile ('-' <) version ++ "-" ++ suffix) (takeBuild version)
+addSuffix ver suf =
+    addBuild (takeWhile ('-' <) ver ++ "-" ++ suf) (takeBuild ver)
 
 addBuild :: [Char] -> [Char] -> [Char]
 addBuild version "" = takeWhile ('+' <) version
 addBuild version build = takeWhile ('+' <) version ++ "+" ++ build
 
-partIndex :: [Char] -> Int
-partIndex part
-        | part == "major" = 0
-        | part == "minor" = 1
-        | part == "patch" = 2
-        | otherwise = -1 -- OMG, nope, this might throw error?
+partIndex :: Part -> Int
+partIndex Major = 0
+partIndex Minor = 1
+partIndex Patch = 2
 
-versionBumper :: [Char] -> [[Char]] -> [Char]
+versionBumper :: Part -> [[Char]] -> [Char]
 versionBumper part current = makeVersion (map (\(x, y) -> if y == partIndex part
                                                           then bumpElement x
                                                           else x) (zip current [0..]))
