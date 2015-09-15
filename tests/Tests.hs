@@ -10,31 +10,25 @@ main = hspec $ do
   -- versionBumper
   describe "Verify versionBumper happy path" $ do
     it "bump major" $ do
-      versionBumper "major" ["1", "0", "0"] `shouldBe` "2.0.0"
+      versionBumper MajorPart ["1", "0", "0"] `shouldBe` "2.0.0"
     it "bump minor" $ do
-      versionBumper "minor" ["1", "0", "0"] `shouldBe` "1.1.0"
+      versionBumper MinorPart ["1", "0", "0"] `shouldBe` "1.1.0"
     it "bump patch" $ do
-      versionBumper "patch" ["1", "0", "0"] `shouldBe` "1.0.1"
+      versionBumper PatchPart ["1", "0", "0"] `shouldBe` "1.0.1"
 
   describe "Verify versionBumper empty args" $ do
-    it "bump with no part" $ do
-      versionBumper "" ["1", "0", "0"] `shouldBe` "1.0.0"
     it "bump with no version" $ do
-      versionBumper "minor" [] `shouldBe` ""
+      versionBumper MinorPart [] `shouldBe` ""
 
   describe "Verify versionBumper with less than three part version" $ do
     it "bump major with two part version" $ do
-      versionBumper "major" ["1", "0"] `shouldBe` "2.0"
+      versionBumper MajorPart ["1", "0"] `shouldBe` "2.0"
     it "bump minorwith two part version" $ do
-      versionBumper "minor" ["1", "0"] `shouldBe` "1.1"
+      versionBumper MinorPart ["1", "0"] `shouldBe` "1.1"
     it "bump major with one part version" $ do
-      versionBumper "major" ["1"] `shouldBe` "2"
+      versionBumper MajorPart ["1"] `shouldBe` "2"
     it "bump minor with one part version" $ do
-      versionBumper "minor" ["1"] `shouldBe` "1"
-
-  describe "Verify versionBumper with invalid part name" $ do
-    it "bump with invalid part name" $ do
-      versionBumper "foo" ["1", "0", "0"] `shouldBe` "1.0.0"
+      versionBumper MinorPart ["1"] `shouldBe` "1"
 
   -- addSuffix
   describe "Verify addSuffix replaces suffix in version" $ do

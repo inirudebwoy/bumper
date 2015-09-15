@@ -25,15 +25,15 @@ optionHandler :: Bumper -> IO ()
 optionHandler Major{..} = do
   -- factor out this to a separate function so part can be passed as argument?
   sequence' (map (\file -> do
-                    exec part current_version file
+                    exec MajorPart current_version file
                  ) files)
 optionHandler Minor{..} = do
   sequence' (map (\file -> do
-                    exec part current_version file
+                    exec MinorPart current_version file
                  ) files)
 optionHandler Patch{..} = do
   sequence' (map (\file -> do
-                    exec part current_version file
+                    exec PatchPart current_version file
                  ) files)
 
 
@@ -44,7 +44,7 @@ sequence' (x:xs) = do
   x
   sequence' xs
 
-exec :: [Char] -> [Char] -> FilePath -> IO ()
+exec :: Part -> [Char] -> FilePath -> IO ()
 exec part current_version file = do
   contents <- readFile file
   let fileLines = lines contents

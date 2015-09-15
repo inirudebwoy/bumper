@@ -13,21 +13,18 @@ data Bumper =
     Major {current_version :: String,
             suffix :: String,
             build :: String,
-            part :: String,
             files :: [FilePath]
            }
     |
     Minor {current_version :: String,
            suffix :: String,
            build :: String,
-           part :: String,
            files :: [FilePath]
           }
     |
     Patch {current_version :: String,
            suffix :: String,
            build :: String,
-           part :: String,
            files :: [FilePath]
           }
       deriving (Show, Data, Typeable)
@@ -37,7 +34,6 @@ major = Major
          {current_version = def &= help "The current version of the software package before bumping." &= typ "VERSION",
           suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
           build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
-          part = def,
           -- part = enum
           --        [Major &= name "a" &= help "Major",
           --         Minor &= name "i" &= help "Minor",
@@ -52,7 +48,6 @@ minor =  Minor
          {current_version = def &= help "The current version of the software package before bumping." &= typ "VERSION",
           suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
           build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
-          part = def,
           -- part = enum
           --        [Major &= name "a" &= help "Major",
           --         Minor &= name "i" &= help "Minor",
@@ -66,7 +61,6 @@ patch = Patch
         {current_version = def &= help "The current version of the software package before bumping." &= typ "VERSION",
           suffix = def &= help "Suffix to be added, e.g., alpha, rc-2" &= typ "SUFFIX",
           build = def &= help "Build number to be added, e.g., b42, f7a8051" &= typ "BUILD",
-          part = def,
           -- part = enum
           --        [Major &= name "a" &= help "Major",
           --         Minor &= name "i" &= help "Minor",
@@ -105,13 +99,12 @@ addBuild :: [Char] -> [Char] -> [Char]
 addBuild version "" = takeWhile ('+' <) version
 addBuild version build = takeWhile ('+' <) version ++ "+" ++ build
 
-partIndex :: [Char] -> Int
-partIndex _ = 0
--- partIndex Major = 0
--- partIndex Minor = 1
--- partIndex Patch = 2
+partIndex :: Part -> Int
+partIndex MajorPart = 0
+partIndex MinorPart = 1
+partIndex PatchPart = 2
 
-versionBumper :: [Char] -> [[Char]] -> [Char]
+versionBumper :: Part -> [[Char]] -> [Char]
 versionBumper part current = makeVersion (map (\(x, y) -> if y == partIndex part
                                                           then bumpElement x
                                                           else x) (zip current [0..]))
